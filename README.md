@@ -5,10 +5,12 @@ Autorzy: Szymon Barczyk, Jan Dyląg
 
 # SETUP
 **1. Klonowanie repozytorium:**  
+```
 git clone https://github.com/sbarczyk/simple-store.git  
 cd simple-store  
 
 **2. Instalacja zalezności:**  
+```
 cd server  
 npm install  
 cd ../client  

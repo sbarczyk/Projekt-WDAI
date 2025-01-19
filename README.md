@@ -8,6 +8,7 @@ Autorzy: Szymon Barczyk, Jan Dyląg
 ```
 git clone https://github.com/sbarczyk/simple-store.git  
 cd simple-store  
+```
 
 **2. Instalacja zalezności:**  
 ```

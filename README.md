@@ -6,7 +6,7 @@ Autorzy: Szymon Barczyk, Jan Dyląg
 # SETUP
 **1. Klonowanie repozytorium:**  
 ```
-git clone https://github.com/sbarczyk/simple-store.git  
+git clone https://github.com/sbarczyk/Projekt-WDAI
 cd simple-store  
 ```
 
@@ -20,13 +20,13 @@ npm install
 
 **3. Uruchomienie serwera:** 
 ``` 
-cd server  
+cd ../server  
 npm run dev  
 ```
 
 **4. Uruchomienie aplikacji React:**  
 ```
-cd client  
+cd ../client  
 npm start  
 ```
 

@@ -1,179 +1,439 @@
 {
   "info": {
-    "_postman_id": "your-unique-id",
-    "name": "SimpleStore API",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "your-exporter-id"
+    "_postman_id": "12345678-abcd-efgh-ijkl-1234567890ab",
+    "name": "Simple Store API",
+    "description": "Kolekcja Postman do testowania przykładowego prostego sklepu internetowego.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5001/api",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
   "item": [
     {
-      "name": "Register",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"username\": \"jan.kowalski\",\n  \"password\": \"MojeSekretneHaslo123\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testUser\",\n  \"password\": \"testPassword\",\n  \"email\": \"test@example.com\"\n}"
             }
-          }
+          },
+          "response": []
         },
-        "url": "http://localhost:5001/api/auth/register"
-      },
-      "response": []
-    },
-    {
-      "name": "Login",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"username\": \"jan.kowalski\",\n  \"password\": \"MojeSekretneHaslo123\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testUser\",\n  \"password\": \"testPassword\"\n}"
             }
-          }
-        },
-        "url": "http://localhost:5001/api/auth/login"
-      },
-      "response": []
-    },
-    {
-      "name": "Refresh Token",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"refreshToken\": \"your-refresh-token\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.accessToken) {",
+                  "    pm.environment.set(\"jwtToken\", jsonData.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
+          ]
         },
-        "url": "http://localhost:5001/api/auth/refresh"
-      },
-      "response": []
-    },
-    {
-      "name": "Get Products",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": "http://localhost:5001/api/products"
-      },
-      "response": []
-    },
-    {
-      "name": "Get Product Details",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": "http://localhost:5001/api/products/1"
-      },
-      "response": []
-    },
-    {
-      "name": "Add to Cart",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer your-access-token"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"productId\": 1,\n  \"quantity\": 2\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"<tu_wstaw_swoj_refresh_token>\"\n}"
             }
-          }
-        },
-        "url": "http://localhost:5001/api/cart"
-      },
-      "response": []
+          },
+          "response": []
+        }
+      ]
     },
     {
-      "name": "Create Order",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer your-access-token"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"items\": [\n    { \"productId\": 1, \"quantity\": 2, \"price\": 100 },\n    { \"productId\": 2, \"quantity\": 1, \"price\": 200 }\n  ],\n  \"totalPrice\": 400\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": ["{{base_url}}"],
+              "path": ["products"]
             }
-          }
+          },
+          "response": []
         },
-        "url": "http://localhost:5001/api/orders"
-      },
-      "response": []
-    },
-    {
-      "name": "Get User Orders",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer your-access-token"
-          }
-        ],
-        "url": "http://localhost:5001/api/orders/myorders"
-      },
-      "response": []
-    },
-    {
-      "name": "Get Order Details",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer your-access-token"
-          }
-        ],
-        "url": "http://localhost:5001/api/orders/1"
-      },
-      "response": []
-    },
-    {
-      "name": "Admin - Add Product",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer admin-access-token"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"title\": \"Nowy Produkt\",\n  \"description\": \"Opis produktu\",\n  \"price\": 100.0\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+        {
+          "name": "Get Single Product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/1",
+              "host": ["{{base_url}}"],
+              "path": ["products", "1"]
             }
-          }
+          },
+          "response": []
         },
-        "url": "http://localhost:5001/api/products"
-      },
-      "response": []
+        {
+          "name": "Create Product (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": ["{{base_url}}"],
+              "path": ["products"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nowy Produkt\",\n  \"description\": \"Opis nowego produktu\",\n  \"price\": 99.99,\n  \"stock\": 50,\n  \"category\": \"Inne\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/1",
+              "host": ["{{base_url}}"],
+              "path": ["products", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Zmieniony Produkt\",\n  \"description\": \"Zmieniony opis\",\n  \"price\": 89.99,\n  \"stock\": 100\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/1",
+              "host": ["{{base_url}}"],
+              "path": ["products", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Create Review (user)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/1/reviews",
+              "host": ["{{base_url}}"],
+              "path": ["products", "1", "reviews"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"content\": \"Bardzo ciekawy produkt.\",\n  \"stars\": 5\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Review (user)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/1/reviews/99",
+              "host": ["{{base_url}}"],
+              "path": ["products", "1", "reviews", "99"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Poprawiona opinia.\",\n  \"stars\": 4\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Review (admin lub właściciel)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/1/reviews/99",
+              "host": ["{{base_url}}"],
+              "path": ["products", "1", "reviews", "99"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Get Cart (user)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cart",
+              "host": ["{{base_url}}"],
+              "path": ["cart"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add to Cart (user)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cart",
+              "host": ["{{base_url}}"],
+              "path": ["cart"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": 1,\n  \"quantity\": 2\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Cart Item Quantity (user)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cart/1",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 5\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Item from Cart (user)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cart/1",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Checkout (user)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cart/checkout",
+              "host": ["{{base_url}}"],
+              "path": ["cart", "checkout"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"credit_card\",\n  \"deliveryAddress\": \"ul. Przykładowa 123, 00-001 Warszawa\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Get All Orders (user)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Order (user)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/1",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

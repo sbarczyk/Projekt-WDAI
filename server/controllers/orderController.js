@@ -92,7 +92,7 @@ const getAllOrders = async (req, res) => {
         },
         {
           model: User,
-          attributes: ["id", "username", "email"],
+          attributes: ["id", "username"],
         },
       ],
     });

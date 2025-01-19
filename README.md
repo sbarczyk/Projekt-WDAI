@@ -16,19 +16,25 @@ cd server
 npm install  
 cd ../client  
 npm install  
+```
 
-**3. Uruchomienie serwera:**  
+**3. Uruchomienie serwera:** 
+``` 
 cd server  
 npm run dev  
+```
 
 **4. Uruchomienie aplikacji React:**  
+```
 cd client  
 npm start  
+```
 
-**5. Dostęp do aplikacji: **  
+**5. Dostęp do aplikacji: ** 
+``` 
 	• Backend API: http://localhost:5001/api  
 	• Frontend: http://localhost:3000  
-
+```
 
 
 # Użyta technologia i biblioteki

@@ -4,31 +4,31 @@ Autorzy: Szymon Barczyk, Jan Dyląg
 
 
 # SETUP
-1. Klonowanie repozytorium:  
+**1. Klonowanie repozytorium:**  
 git clone https://github.com/sbarczyk/simple-store.git  
 cd simple-store  
 
-2. Instalacja zalezności:  
+**2. Instalacja zalezności:**  
 cd server  
 npm install  
 cd ../client  
 npm install  
 
-3. Uruchomienie serwera:  
+**3. Uruchomienie serwera:**  
 cd server  
 npm run dev  
 
-4. Uruchomienie aplikacji React:  
+**4. Uruchomienie aplikacji React:**  
 cd client  
 npm start  
 
-5. Dostęp do aplikacji:  
+**5. Dostęp do aplikacji: **  
 	• Backend API: http://localhost:5001/api  
 	• Frontend: http://localhost:3000  
 
 
 
-# Użyta technologia i biblioteki**
+# Użyta technologia i biblioteki
 
 **Backend**  
 	• Node.js: Serwer aplikacji.  
@@ -47,7 +47,7 @@ npm start
 
 
 # Funkcjonalności
-Funkcjonalny frontent z wykorzystaniem frameworku JS: React.  
+**Funkcjonalny frontent z wykorzystaniem frameworku JS: React.**  
 
 	1. Strona główna:  
 	• Przyciągający wygląd i układ.  
@@ -87,7 +87,7 @@ Funkcjonalny frontent z wykorzystaniem frameworku JS: React.
 	• Rejestracja nowych użytkowników.  
 	• Automatyczne przekierowanie na stronę logowania w przypadku braku dostępu.  
 
-Backend 
+**Backend**  
 
 	1. Operacje CRUD z wykorzystaniem bazy danych:  
 	• Produkty: dodawanie, edytowanie, usuwanie, pobieranie.  

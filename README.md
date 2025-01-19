@@ -68,26 +68,27 @@ Funkcjonalny frontent z wykorzystaniem frameworku JS: React.
         - uniemozliwienie uzytkownikowi dodania więcej niz jednej opini do danego produktu  
 	• Możliwość dodania produktu do koszyka z określoną ilością.  
 
-	4.	Koszyk:  
+	4. Koszyk:  
 	• Przegląd produktów dodanych do koszyka z możliwością edycji ilości i usuwania.  
 	• Automatyczne obliczanie całkowitej wartości koszyka.  
 	• Możliwość przejścia do finalizacji zamówienia.  
 
-	5.	Historia zamówień:  
+	5. Historia zamówień:  
 	• Wyświetlenie listy zamówień użytkownika.  
 	• Szczegóły każdego zamówienia z informacjami o produktach, ilości, cenach i statusie.  
 
-	6.	Panel administracyjny:  
+	6. Panel administracyjny:  
 	• Zarządzanie produktami: dodawanie, edycja, usuwanie.  
 	• Przegląd wszystkich zamówień.  
 	• Usuwanie opinii użytkowników.  
 
-	7.	Logowanie i rejestracja:  
+	7. Logowanie i rejestracja:  
 	• Logowanie z obsługą JWT (z Refresh Tokenem).  
 	• Rejestracja nowych użytkowników.  
 	• Automatyczne przekierowanie na stronę logowania w przypadku braku dostępu.  
 
-Backend  
+Backend 
+
 	1. Operacje CRUD z wykorzystaniem bazy danych:  
 	• Produkty: dodawanie, edytowanie, usuwanie, pobieranie.  
 	• Opinie: dodawanie, edytowanie, usuwanie.  
@@ -97,8 +98,7 @@ Backend
 	• Rejestracja z hashowaniem haseł (bcryptjs).  
 	• Logowanie z JWT.  
 	• Obsługa Refresh Tokenów.  
-    • Zachowana sesja uzytkownika.  
-    
+    • Zachowana sesja uzytkownika.
 
 	3. Obsługa autoryzacji:  
 	• Middleware dla ochrony zasobów.  

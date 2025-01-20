@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Button, Form, Modal } from "react-bootstrap";
+import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import axiosInstance from "../api/axiosInstance";
 import { AuthContext } from "../context/AuthContext";
 
@@ -13,16 +13,9 @@ const ProductPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [reviews, setReviews] = useState([]);
 
-  const [email, setEmail] = useState("");
-  const [comment, setComment] = useState("");
-  const [rating, setRating] = useState(5);
-
-  const [editReview, setEditReview] = useState(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-
   useEffect(() => {
-      document.title = "SimpleStore - Szczegóły produktu";
-    }, []);
+    document.title = "SimpleStore - Szczegóły produktu";
+  }, []);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -30,7 +23,7 @@ const ProductPage = () => {
         const { data } = await axiosInstance.get(`/products/${id}`);
         setProduct(data);
       } catch (error) {
-        console.error(error);
+        console.error("Błąd podczas pobierania produktu:", error);
       }
     };
     fetchProduct();
@@ -42,106 +35,36 @@ const ProductPage = () => {
         const { data } = await axiosInstance.get(`/reviews/${id}`);
         setReviews(data);
       } catch (error) {
-        console.error(error);
+        console.error("Błąd podczas pobierania opinii:", error);
       }
     };
     fetchReviews();
   }, [id]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!user) {
       navigate("/login");
       return;
     }
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existing = cart.find((item) => item.productId === id);
-    if (existing) {
-      existing.quantity += Number(quantity);
-    } else {
-      cart.push({ productId: id, quantity: Number(quantity) });
-    }
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Dodano do koszyka!");
-  };
 
-  const handleReviewSubmit = async (e) => {
-    e.preventDefault();
-    if (!user) {
-      navigate("/login");
-      return;
-    }
     try {
+      const cartItem = {
+        productId: id,
+        quantity: Number(quantity),
+      };
+
       await axiosInstance.post(
-        "/reviews",
-        {
-          productId: id,
-          email,
-          comment,
-          rating: parseInt(rating, 10),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      alert("Dodano opinię!");
-      setEmail("");
-      setComment("");
-      setRating(5);
-      const { data } = await axiosInstance.get(`/reviews/${id}`);
-      setReviews(data);
-    } catch (error) {
-      console.error("Błąd podczas dodawania opinii:", error.response?.data);
-      alert(error?.response?.data?.message || "Błąd dodawania opinii");
-    }
-  };
-
-  const handleEditReview = (review) => {
-    setEditReview(review);
-    setComment(review.comment);
-    setRating(review.rating);
-    setShowEditModal(true);
-  };
-
-  const handleSaveReview = async () => {
-    if (!editReview) return;
-    try {
-      await axiosInstance.put(
-        `/reviews/${editReview.id}`,
-        {
-          comment,
-          rating: parseInt(rating, 10),
-        },
+        "/cart",
+        { items: [cartItem] },
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
-      setReviews(
-        reviews.map((r) =>
-          r.id === editReview.id ? { ...r, comment, rating } : r
-        )
-      );
-      setShowEditModal(false);
-      setEditReview(null);
-      setComment("");
-      setRating(5);
-    } catch (error) {
-      console.error("Błąd podczas edycji opinii:", error.response?.data);
-      alert(error?.response?.data?.message || "Błąd edycji opinii");
-    }
-  };
 
-  const handleDeleteReview = async (reviewId) => {
-    if (!user) return;
-    try {
-      await axiosInstance.delete(`/reviews/${reviewId}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      setReviews(reviews.filter((r) => r.id !== reviewId));
+      alert("Produkt dodany do koszyka!");
     } catch (error) {
-      console.error(error);
-      alert(error?.response?.data?.message || "Błąd usuwania opinii");
+      console.error("Błąd podczas dodawania do koszyka:", error.response?.data);
+      alert(error?.response?.data?.message || "Błąd dodawania do koszyka");
     }
   };
 
@@ -174,109 +97,17 @@ const ProductPage = () => {
         </Col>
       </Row>
       <hr />
-      <Row className="mt-4">
-        <Col md={6}>
-          <h3>Opinie:</h3>
-          {reviews.map((rev) => (
-            <div key={rev.id} style={{ borderBottom: "1px solid #ccc", marginBottom: "10px" }}>
-              <p>
-                <strong>{rev.email}</strong> ({rev.rating} ★)
-              </p>
-              <p>{rev.comment}</p>
-              {(user?.role === "admin" || user?.id === rev.userId) && (
-                <>
-                  <Button
-                    variant="warning"
-                    size="sm"
-                    onClick={() => handleEditReview(rev)}
-                    className="me-2"
-                  >
-                    Edytuj
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDeleteReview(rev.id)}
-                  >
-                    Usuń
-                  </Button>
-                </>
-              )}
-            </div>
-          ))}
-        </Col>
-        <Col md={6}>
-          <h3>Dodaj opinię:</h3>
-          <Form onSubmit={handleReviewSubmit}>
-            <Form.Group>
-              <Form.Label>Email:</Form.Label>
-              <Form.Control
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Opinia:</Form.Label>
-              <Form.Control
-                as="textarea"
-                required
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Ocena (1-5):</Form.Label>
-              <Form.Control
-                type="number"
-                required
-                min={1}
-                max={5}
-                value={rating}
-                onChange={(e) => setRating(e.target.value)}
-              />
-            </Form.Group>
-            <Button type="submit" className="mt-3">
-              Wyślij
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edytuj opinię</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group>
-            <Form.Label>Komentarz:</Form.Label>
-            <Form.Control
-              as="textarea"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group className="mt-3">
-            <Form.Label>Ocena (1-5):</Form.Label>
-            <Form.Control
-              type="number"
-              min={1}
-              max={5}
-              value={rating}
-              onChange={(e) => setRating(e.target.value)}
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
-            Anuluj
-          </Button>
-          <Button variant="primary" onClick={handleSaveReview}>
-            Zapisz
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <h3>Opinie:</h3>
+      {reviews.length > 0 ? (
+        reviews.map((review) => (
+          <div key={review.id}>
+            <strong>{review.email}</strong> ({review.rating} ★)
+            <p>{review.comment}</p>
+          </div>
+        ))
+      ) : (
+        <p>Brak opinii dla tego produktu.</p>
+      )}
     </Container>
   );
 };

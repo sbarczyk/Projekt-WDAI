@@ -1,4 +1,4 @@
-const { Order, Product, User, OrderProducts } = require("../models");
+const { Order, Product, User, OrderProducts, CartItem, Cart } = require("../models");
 
 const createOrder = async (req, res) => {
   try {
@@ -8,11 +8,13 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ message: "Nieprawidłowe dane zamówienia" });
     }
 
+
     const newOrder = await Order.create({
       userId: req.user.id,
       total: totalPrice,
       status: "pending",
     });
+
 
     const orderProducts = items.map((item) => ({
       OrderId: newOrder.id,
@@ -23,6 +25,11 @@ const createOrder = async (req, res) => {
     }));
 
     await OrderProducts.bulkCreate(orderProducts);
+
+    const cart = await Cart.findOne({ where: { userId: req.user.id } });
+    if (cart) {
+      await CartItem.destroy({ where: { cartId: cart.id } });
+    }
 
     res.status(201).json({ message: "Zamówienie utworzone", order: newOrder });
   } catch (error) {

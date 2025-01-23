@@ -11,25 +11,16 @@ const CartPage = () => {
   const [productsMap, setProductsMap] = useState({});
 
   useEffect(() => {
-    document.title = "SimpleStore - Koszyk";
-  }, []);
-
+      document.title = "SimpleStore - Koszyk";
+    }, []);
+    
   useEffect(() => {
     if (!user) {
       navigate("/login");
       return;
     }
-
-    const fetchCart = async () => {
-      try {
-        const { data } = await axiosInstance.get("/cart", {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        setCartItems(data);
-      } catch (error) {
-        console.error("Błąd podczas pobierania koszyka:", error);
-      }
-    };
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    setCartItems(cart);
 
     const fetchProducts = async () => {
       try {
@@ -40,72 +31,39 @@ const CartPage = () => {
         });
         setProductsMap(pMap);
       } catch (error) {
-        console.error("Błąd podczas pobierania produktów:", error);
+        console.error(error);
       }
     };
-
-    fetchCart();
     fetchProducts();
-  }, [user, navigate, accessToken]);
+  }, [user, navigate]);
 
-  const removeFromCart = async (productId) => {
-    try {
-      await axiosInstance.delete(`/cart/item?productId=${productId}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      setCartItems((prev) => prev.filter((item) => item.productId !== productId));
-      alert("Produkt usunięty z koszyka!");
-    } catch (error) {
-      console.error("Błąd podczas usuwania produktu z koszyka:", error);
-    }
+  const removeFromCart = (productId) => {
+    const newCart = cartItems.filter((item) => item.productId !== productId);
+    setCartItems(newCart);
+    localStorage.setItem("cart", JSON.stringify(newCart));
   };
 
-  const updateQuantity = async (productId, newQuantity) => {
-    try {
-      await axiosInstance.put(
-        "/cart/item",
-        { productId, quantity: newQuantity },
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
-      setCartItems((prev) =>
-        prev.map((item) =>
-          item.productId === productId
-            ? { ...item, quantity: newQuantity }
-            : item
-        )
-      );
-    } catch (error) {
-      console.error("Błąd podczas aktualizacji ilości produktu:", error);
-    }
+  const updateQuantity = (productId, newQuantity) => {
+    const newCart = cartItems.map((item) => {
+      if (item.productId === productId) {
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    });
+    setCartItems(newCart);
+    localStorage.setItem("cart", JSON.stringify(newCart));
   };
 
   const handleQuantityChange = (productId, value) => {
     if (/^\d*$/.test(value)) {
-      const quantity = value === "" ? "" : Number(value);
-      setCartItems((prev) =>
-        prev.map((item) =>
-          item.productId === productId ? { ...item, quantity } : item
-        )
-      );
+      // Tylko cyfry lub puste pole są dozwolone
+      updateQuantity(productId, value === "" ? "" : Number(value));
     }
   };
 
   const handleBlur = (productId, value) => {
-    const quantity = value === "" || value < 1 ? 1 : Number(value);
-    updateQuantity(productId, quantity);
-  };
-
-  const clearCart = async () => {
-    try {
-      await axiosInstance.delete("/cart", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      setCartItems([]);
-      alert("Koszyk wyczyszczony!");
-    } catch (error) {
-      console.error("Błąd podczas czyszczenia koszyka:", error);
+    if (value === "" || value < 1) {
+      updateQuantity(productId, 1); // Ustaw domyślną wartość na 1
     }
   };
 
@@ -133,30 +91,20 @@ const CartPage = () => {
   
       const totalPrice = getTotalPrice();
   
-      const response = await axiosInstance.post(
+      await axiosInstance.post(
         "/orders",
         { items, totalPrice },
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
-  
-      if (response.status === 201) {
-
-        await axiosInstance.delete("/cart", {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-  
-
-        setCartItems([]);
-        alert("Zamówienie zostało pomyślnie utworzone!");
-        navigate("/orders");
-      } else {
-        alert("Nie udało się złożyć zamówienia.");
-      }
+      alert("Zamówienie utworzone!");
+      localStorage.removeItem("cart");
+      setCartItems([]);
+      navigate("/orders");
     } catch (error) {
-      console.error("Błąd podczas składania zamówienia:", error.response?.data);
-      alert(error?.response?.data?.message || "Błąd składania zamówienia");
+      console.error(error);
+      alert(error?.response?.data?.message || "Błąd finalizacji zamówienia");
     }
   };
 
@@ -212,9 +160,6 @@ const CartPage = () => {
             </tbody>
           </Table>
           <h4>Suma: {getTotalPrice()} PLN</h4>
-          <Button className="me-2" onClick={clearCart}>
-            Wyczyść koszyk
-          </Button>
           <Button onClick={handleCheckout}>Złóż zamówienie</Button>
         </>
       )}
